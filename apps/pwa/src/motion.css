@@ -1,0 +1,277 @@
+html,
+body,
+#root {
+  height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+input:not([type='checkbox']):not([type='radio']):not([type='range']),
+textarea,
+select {
+  font-size: 16px;
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 0%,
+    color-mix(in srgb, var(--border) 70%, var(--bg-elevated)) 50%,
+    var(--bg-elevated) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.reveal,
+.reveal-fade,
+.art-reveal {
+  animation: reveal-fade 0.3s ease-out both;
+}
+
+.screen-layer {
+  transition: opacity 0.2s ease;
+}
+
+.usage-ring__arc {
+  transition: stroke-dasharray 0.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .reveal,
+  .reveal-fade,
+  .art-reveal,
+  .alive-bg__orb,
+  .alive-bg__scrim,
+  .lcd-marquee {
+    animation: none;
+  }
+
+  .usage-ring__arc {
+    transition: none;
+  }
+
+  .alive-bg__noise {
+    display: none;
+  }
+}
+
+html.motion-off .skeleton,
+html.motion-off .reveal,
+html.motion-off .reveal-fade,
+html.motion-off .art-reveal,
+html.motion-off .alive-bg__orb,
+html.motion-off .alive-bg__scrim,
+html.motion-off .lcd-marquee {
+  animation: none;
+}
+
+html.motion-off .usage-ring__arc {
+  transition: none;
+}
+
+html.motion-off .alive-bg__noise {
+  display: none;
+}
+
+@keyframes lcd-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.lcd-marquee {
+  display: flex;
+  width: max-content;
+  animation: lcd-marquee 12s linear infinite;
+}
+
+.lcd-marquee__item {
+  padding-right: 2rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--lcd);
+  white-space: nowrap;
+}
+
+@keyframes alive-orb {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.28;
+  }
+  50% {
+    transform: translate(6%, -8%) scale(1.18);
+    opacity: 0.46;
+  }
+}
+
+@keyframes alive-scan {
+  from {
+    background-position:
+      0 0,
+      0 0,
+      center;
+  }
+  to {
+    background-position:
+      0 8px,
+      0 0,
+      center;
+  }
+}
+
+.alive-bg {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--bg);
+}
+
+.alive-bg__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  animation: alive-orb 14s ease-in-out infinite;
+}
+
+.alive-bg__orb--a {
+  width: 58vmin;
+  height: 58vmin;
+  left: -12%;
+  top: 8%;
+  background: color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+.alive-bg__orb--b {
+  width: 48vmin;
+  height: 48vmin;
+  right: -10%;
+  bottom: 4%;
+  background: color-mix(in srgb, var(--lcd) 32%, transparent);
+  animation-delay: -7s;
+}
+
+.alive-bg__art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0.38;
+}
+
+.alive-bg__art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.12);
+  filter: saturate(0.8) contrast(1.15) blur(18px);
+}
+
+.alive-bg__noise {
+  position: absolute;
+  inset: 0;
+  background-image: url('/static-noise.gif');
+  background-repeat: repeat;
+  background-size: 96px 96px;
+  mix-blend-mode: overlay;
+  opacity: 0.1;
+  image-rendering: pixelated;
+}
+
+.alive-bg__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      color-mix(in srgb, var(--bg) 42%, transparent) 2px 3px
+    ),
+    color-mix(in srgb, var(--bg) 38%, transparent),
+    radial-gradient(ellipse at center, transparent 35%, var(--bg) 100%);
+  background-size:
+    auto 3px,
+    auto,
+    auto;
+  animation: alive-scan 8s linear infinite;
+}
+
+.alive-bg--playing .alive-bg__art {
+  opacity: 0.52;
+}
+
+.alive-bg--playing .alive-bg__art img {
+  filter: saturate(0.95) contrast(1.2) blur(18px);
+}
+
+.alive-bg--playing .alive-bg__orb {
+  animation-duration: 8s;
+}
+
+.alive-bg__top {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--bg-well) 0%,
+    color-mix(in srgb, var(--bg-well) 88%, transparent) 18%,
+    color-mix(in srgb, var(--bg) 55%, transparent) 38%,
+    transparent 62%
+  );
+}

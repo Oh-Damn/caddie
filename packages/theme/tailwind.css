@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+@import '@companion/theme/theme.css';
+
+@theme inline {
+  --color-app: var(--bg);
+  --color-app-elevated: var(--bg-elevated);
+  --color-app-well: var(--bg-well);
+  --color-app-border: var(--border);
+  --color-app-text: var(--text);
+  --color-app-muted: var(--text-muted);
+  --color-highlight: var(--highlight);
+  --color-lcd: var(--lcd);
+  --color-paper: var(--paper);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-danger: var(--danger);
+  --radius-app: var(--radius);
+  --font-sans: var(--font);
+  --font-mono: var(--font-mono);
+  --spacing-s1: var(--s-1);
+  --spacing-s2: var(--s-2);
+  --spacing-s3: var(--s-3);
+  --spacing-s4: var(--s-4);
+  --spacing-s5: var(--s-5);
+  --spacing-touch: var(--touch);
+  --height-touch: var(--touch);
+  --width-touch: var(--touch);
+  --height-touch-lg: var(--touch-lg);
+  --width-touch-lg: var(--touch-lg);
+}

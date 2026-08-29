@@ -1,0 +1,32 @@
+{
+  "name": "companion",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.15.0",
+  "scripts": {
+    "dev": "pnpm --filter @companion/desktop tauri dev",
+    "build:app": "sh scripts/build-app.sh",
+    "sign": "sh scripts/sign-app.sh",
+    "build:pwa": "pnpm --filter @companion/pwa build",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "purge": "sh scripts/purge.sh",
+    "icons": "python3 scripts/gen-icons.py"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

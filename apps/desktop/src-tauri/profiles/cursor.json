@@ -1,0 +1,19 @@
+{
+  "id": "cursor",
+  "name": "Cursor",
+  "match": {
+    "bundleIds": ["com.todesktop.230313mzl4w4u92", "com.cursor.Cursor"]
+  },
+  "pad": [
+    [
+      { "id": "agent", "title": "Agent", "chord": ["meta", "i"] },
+      { "id": "stop", "title": "Stop", "chord": ["meta", "shift", "backspace"] },
+      { "id": "undo", "title": "Undo", "action": "shortcut.undo" }
+    ],
+    [
+      { "id": "accept", "title": "Accept", "chord": ["meta", "enter"] },
+      { "id": "reject", "title": "Reject", "chord": ["meta", "backspace"] },
+      { "id": "palette", "title": "Palette", "chord": ["meta", "shift", "p"] }
+    ]
+  ]
+}

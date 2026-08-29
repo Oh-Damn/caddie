@@ -1,0 +1,12 @@
+{
+  "id": "zoom",
+  "name": "Zoom",
+  "match": { "bundleIds": ["us.zoom.xos"] },
+  "pad": [
+    [
+      { "id": "mute", "title": "Mute", "chord": ["meta", "shift", "a"] },
+      { "id": "video", "title": "Video", "chord": ["meta", "shift", "v"] },
+      { "id": "share", "title": "Share", "chord": ["meta", "shift", "s"] }
+    ]
+  ]
+}

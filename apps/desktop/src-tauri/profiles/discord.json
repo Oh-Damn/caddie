@@ -1,0 +1,19 @@
+{
+  "id": "discord",
+  "name": "Discord",
+  "match": {
+    "bundleIds": ["com.hnc.Discord", "com.hnc.DiscordCanary", "com.hnc.DiscordPTB"]
+  },
+  "pad": [
+    [
+      { "id": "mute", "title": "Mute", "chord": ["meta", "shift", "m"] },
+      { "id": "deafen", "title": "Deafen", "chord": ["meta", "shift", "d"] },
+      { "id": "jump", "title": "Jump", "chord": ["meta", "k"] }
+    ],
+    [
+      { "id": "new", "title": "New DM", "chord": ["meta", "shift", "n"] },
+      { "id": "emoji", "title": "Emoji", "chord": ["meta", "e"] },
+      { "id": "inbox", "title": "Inbox", "chord": ["meta", "i"] }
+    ]
+  ]
+}

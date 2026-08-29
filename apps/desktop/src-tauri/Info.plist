@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>NSAppleEventsUsageDescription</key>
+  <string>Caddie uses Automation to see the frontmost app and control Music, Spotify, and browsers from your phone.</string>
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>Your phone on the same Wi-Fi connects to Caddie on this Mac. No cloud is used.</string>
+</dict>
+</plist>

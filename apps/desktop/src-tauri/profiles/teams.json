@@ -1,0 +1,12 @@
+{
+  "id": "teams",
+  "name": "Teams",
+  "match": { "bundleIds": ["com.microsoft.teams2", "com.microsoft.teams"] },
+  "pad": [
+    [
+      { "id": "mute", "title": "Mute", "chord": ["meta", "shift", "m"] },
+      { "id": "camera", "title": "Camera", "chord": ["meta", "shift", "o"] },
+      { "id": "share", "title": "Share", "chord": ["meta", "shift", "e"] }
+    ]
+  ]
+}

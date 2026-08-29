@@ -1,0 +1,19 @@
+{
+  "id": "vscode",
+  "name": "VS Code",
+  "match": {
+    "bundleIds": ["com.microsoft.VSCode", "com.microsoft.VSCodeInsiders"]
+  },
+  "pad": [
+    [
+      { "id": "run", "title": "Run", "chord": ["f5"] },
+      { "id": "terminal", "title": "Terminal", "chord": ["control", "grave"] },
+      { "id": "git", "title": "Git", "chord": ["control", "shift", "g"] }
+    ],
+    [
+      { "id": "palette", "title": "Palette", "chord": ["meta", "shift", "p"] },
+      { "id": "open", "title": "Open", "chord": ["meta", "p"] },
+      { "id": "search", "title": "Search", "chord": ["meta", "shift", "f"] }
+    ]
+  ]
+}

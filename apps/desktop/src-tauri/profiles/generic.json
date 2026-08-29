@@ -1,0 +1,21 @@
+{
+  "id": "generic",
+  "name": "Desktop",
+  "match": { "bundleIds": [] },
+  "pad": [
+    [
+      { "id": "undo", "title": "Undo", "action": "shortcut.undo" },
+      { "id": "redo", "title": "Redo", "action": "shortcut.redo" },
+      { "id": "save", "title": "Save", "action": "shortcut.save" }
+    ],
+    [
+      { "id": "cut", "title": "Cut", "action": "shortcut.cut" },
+      { "id": "copy", "title": "Copy", "action": "shortcut.copy" },
+      { "id": "paste", "title": "Paste", "action": "shortcut.paste" }
+    ],
+    [
+      { "id": "select", "title": "Select all", "action": "shortcut.select_all" },
+      { "id": "find", "title": "Find", "action": "shortcut.find" }
+    ]
+  ]
+}

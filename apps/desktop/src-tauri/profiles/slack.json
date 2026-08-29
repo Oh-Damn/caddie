@@ -1,0 +1,17 @@
+{
+  "id": "slack",
+  "name": "Slack",
+  "match": { "bundleIds": ["com.tinyspeck.slackmacgap"] },
+  "pad": [
+    [
+      { "id": "jump", "title": "Jump", "chord": ["meta", "k"] },
+      { "id": "new", "title": "New", "chord": ["meta", "n"] },
+      { "id": "activity", "title": "Activity", "chord": ["meta", "shift", "a"] }
+    ],
+    [
+      { "id": "huddle", "title": "Huddle", "chord": ["meta", "shift", "h"] },
+      { "id": "threads", "title": "Threads", "chord": ["meta", "shift", "t"] },
+      { "id": "search", "title": "Search", "chord": ["meta", "g"] }
+    ]
+  ]
+}

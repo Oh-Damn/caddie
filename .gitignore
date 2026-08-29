@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-ssr
+target
+.DS_Store
+*.log
+.env
+.env.*
+sprints/
+.vscode
+.idea
+apps/desktop/src-tauri/gen
+apps/pwa/dev-dist
+apps/pwa/dist
+*.tsbuildinfo

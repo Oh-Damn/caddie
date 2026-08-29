@@ -1,0 +1,12 @@
+node_modules
+dist
+target
+pnpm-lock.yaml
+*.md
+sprints
+apps/desktop/src-tauri/icons
+*.png
+*.icns
+*.ico
+*.yaml
+

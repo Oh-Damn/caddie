@@ -1,0 +1,19 @@
+{
+  "id": "claude",
+  "name": "Claude",
+  "match": {
+    "bundleIds": ["com.anthropic.claudefordesktop"]
+  },
+  "pad": [
+    [
+      { "id": "jump", "title": "Jump", "chord": ["meta", "k"] },
+      { "id": "new", "title": "New", "chord": ["meta", "shift", "o"] },
+      { "id": "stop", "title": "Stop", "chord": ["escape"] }
+    ],
+    [
+      { "id": "copy", "title": "Copy", "chord": ["meta", "shift", "c"] },
+      { "id": "find", "title": "Find", "action": "shortcut.find" },
+      { "id": "sidebar", "title": "Sidebar", "chord": ["meta", "shift", "s"] }
+    ]
+  ]
+}
