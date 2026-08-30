@@ -34,9 +34,10 @@ When one is waiting on you, the phone chimes and the agents chip lights up. Plan
 usage is read from Claude's own local cache, so the percentages are the real
 ones rather than an estimate, and no credential is involved.
 
-**Stays on your network.** The Mac serves the PWA over HTTPS with a certificate
-it signs itself. Pairing is a QR code and a six character code. Trusted devices
-are remembered.
+**Stays on your network.** The Mac serves the PWA over plain HTTP on your own
+Wi-Fi, so there is no certificate to accept and nothing to re-trust when your
+router hands out a new address. Pairing is a QR code and a six character code.
+Trusted devices are remembered.
 
 **Reads only what you allow.** Every agent provider has a switch in the desktop
 app, and off is a real stop: no file is opened, no Accessibility tree is walked,
@@ -107,6 +108,13 @@ running app first, `--dry-run` to preview.
 If the phone still shows a stale build, use **Clear cache and reload** in the
 app's settings.
 
+Because the app is served over HTTP rather than HTTPS, the browser will not give
+it a secure context. In-app QR scanning needs the camera and is therefore
+unavailable; scan the pairing QR with the phone's own Camera app, or type the
+address and code by hand. Service workers are also unavailable, so the app does
+not install as an offline PWA. It needs the Mac on the same network to do
+anything, so there is nothing useful to run offline.
+
 ## Layout
 
 ```
@@ -124,5 +132,5 @@ MIT. See [LICENSE](LICENSE).
 <br>
 <img src="apps/pwa/public/oh-damn-logo.svg" alt="OhDamn!" width="120">
 <br>
-<sub><b>POWERED BY OHDAMN!</b></sub>
+<sub><b>POWERED BY OhDamn!</b></sub>
 </div>

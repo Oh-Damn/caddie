@@ -113,16 +113,10 @@ export function PairingView({ session, error }: Props) {
           <summary className="type-micro cursor-pointer">Phone will not connect</summary>
           <div className="mt-s2 flex flex-col gap-s2">
             <p className="type-secondary text-app-muted">
-              A certificate warning is expected. This Mac signs its own, because the
-              connection never leaves your network. Tap Advanced, then Continue.
-            </p>
-            <p className="type-secondary text-app-muted">
               If the .local name does not resolve, use the address by number:
             </p>
             <p className="type-code break-all">{hostOnly(session.fallbackHttpUrl)}</p>
-            <p className="type-code text-app-muted">
-              server {session.fingerprint} / cert {session.certFingerprint}
-            </p>
+            <p className="type-code text-app-muted">server {session.fingerprint}</p>
           </div>
         </details>
 

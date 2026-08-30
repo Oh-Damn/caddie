@@ -411,7 +411,7 @@ function useCompanionState(): CompanionValue {
           if (gen !== genRef.current) return;
           const latest = savedRef.current;
           if (!latest) return;
-          connectRef.current(`https://${latest.host}`, null, latest);
+          connectRef.current(`http://${latest.host}`, null, latest);
         }, delay);
       };
 
@@ -439,7 +439,7 @@ function useCompanionState(): CompanionValue {
       const saved = loadSession();
       if (saved?.host && saved.deviceId) {
         setHost(saved.host);
-        connectRef.current(`https://${saved.host}`, null, saved);
+        connectRef.current(`http://${saved.host}`, null, saved);
       } else if (currentRoute() !== ROUTES.connect) {
         navigate(ROUTES.connect, true);
       }
@@ -472,7 +472,7 @@ function useCompanionState(): CompanionValue {
       const saved = savedRef.current ?? loadSession();
       if (!saved?.host || !saved.deviceId) return;
       if (socketIsHealthy()) return;
-      connectRef.current(`https://${saved.host}`, null, saved);
+      connectRef.current(`http://${saved.host}`, null, saved);
     };
     const onVisible = () => {
       if (document.visibilityState === 'visible') resume();
@@ -517,7 +517,7 @@ function useCompanionState(): CompanionValue {
     const resolved = normalizeHost(host);
     setHost(resolved);
     const saved = loadSession();
-    connect(`https://${resolved}`, saved?.deviceId ? null : secret.trim() || null, saved);
+    connect(`http://${resolved}`, saved?.deviceId ? null : secret.trim() || null, saved);
   }, [connect, host, secret]);
 
   const connectFromPairingUrl = useCallback(

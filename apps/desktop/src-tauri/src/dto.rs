@@ -27,8 +27,6 @@ pub struct SessionDto {
     #[serde(rename = "pairingSecret")]
     pub pairing_secret: String,
     pub fingerprint: String,
-    #[serde(rename = "certFingerprint")]
-    pub cert_fingerprint: String,
     pub port: u16,
     #[serde(rename = "clientCount")]
     pub client_count: usize,

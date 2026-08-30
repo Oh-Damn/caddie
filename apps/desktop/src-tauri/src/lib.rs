@@ -19,7 +19,6 @@ mod protocol;
 mod providers;
 mod server;
 mod state;
-mod tls;
 mod tray;
 mod uninstall;
 
