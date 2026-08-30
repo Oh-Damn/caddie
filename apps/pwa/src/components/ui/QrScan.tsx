@@ -175,11 +175,7 @@ export function QrScan({ active, onScan }: Props) {
         >
           <Camera className="h-8 w-8 text-lcd" strokeWidth={1.8} />
           <span className="type-secondary text-app-text">Scan</span>
-          {!window.isSecureContext ? (
-            <span className="type-meta text-center text-app-muted">
-              Camera needs HTTPS. Enter the code below instead.
-            </span>
-          ) : denied ? (
+          {denied ? (
             <span className="type-meta text-center text-app-muted">
               Allow camera, then tap again
             </span>

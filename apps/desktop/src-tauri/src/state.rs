@@ -19,6 +19,7 @@ use tokio::sync::broadcast;
 #[derive(Clone)]
 pub struct AppState {
     inner: Arc<Inner>,
+    tls: crate::tls::TlsMaterial,
 }
 
 struct Inner {
@@ -45,6 +46,7 @@ struct Inner {
     mdns: Mutex<Option<crate::mdns::MdnsGuard>>,
     icon_dir: PathBuf,
     icons: Mutex<HashMap<String, Vec<u8>>>,
+    cert_fingerprint: String,
     snapshot_busy: AtomicBool,
     clipboard: Mutex<ClipboardLog>,
     mic_level: Mutex<u8>,
@@ -242,6 +244,7 @@ impl AppState {
         let icon_dir = dir.join("icons");
         std::fs::create_dir_all(&icon_dir)?;
         let stored = Stored::load_or_init(&persist_path)?;
+        let tls = crate::tls::load_or_create(&dir, &lan_ip(), &local_host_fqdn())?;
         let (events, _) = broadcast::channel(32);
         let os = os::platform();
         let blank = Snapshot::default();
@@ -277,6 +280,7 @@ impl AppState {
             mdns: Mutex::new(None),
             icon_dir,
             icons: Mutex::new(HashMap::new()),
+            cert_fingerprint: tls.cert_fingerprint.clone(),
             snapshot_busy: AtomicBool::new(false),
             clipboard: Mutex::new(ClipboardLog::new(clip_dir)),
             mic_level: Mutex::new(75),
@@ -286,7 +290,12 @@ impl AppState {
         };
         Ok(Self {
             inner: Arc::new(inner),
+            tls,
         })
+    }
+
+    pub fn tls(&self) -> &crate::tls::TlsMaterial {
+        &self.tls
     }
 
     pub fn port(&self) -> u16 {
@@ -1511,11 +1520,13 @@ impl AppState {
         let secret = self.pairing_secret();
         let snap = self.snapshot();
         SessionDto {
-            http_url: format!("http://{host}:{port}/?s={secret}"),
-            fallback_http_url: format!("http://{ip}:{port}/?s={secret}"),
+            http_url: format!("https://{host}:{port}/?s={secret}"),
+            fallback_http_url: format!("https://{ip}:{port}/?s={secret}"),
             ws_url: format!("wss://{host}:{port}/ws"),
             pairing_secret: secret,
             fingerprint: self.fingerprint(),
+            cert_fingerprint: self.inner.cert_fingerprint.clone(),
+            version: env!("CARGO_PKG_VERSION").to_string(),
             port,
             client_count: self.client_count(),
             live: self.wants_updates(),

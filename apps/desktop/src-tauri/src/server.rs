@@ -103,8 +103,12 @@ pub async fn run(state: AppState) -> Result<(), Box<dyn std::error::Error + Send
     app = app.layer(axum::middleware::from_fn(cache_policy));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], state.port()));
-    tracing::info!("listening on {addr} (http)");
-    axum_server::bind(addr)
+    let tls = state.tls();
+    let config =
+        axum_server::tls_rustls::RustlsConfig::from_pem(tls.cert_pem.clone(), tls.key_pem.clone())
+            .await?;
+    tracing::info!("listening on {addr} (https)");
+    axum_server::bind_rustls(addr, config)
         .serve(app.into_make_service_with_connect_info::<SocketAddr>())
         .await?;
     Ok(())
@@ -171,7 +175,7 @@ async fn icon(
 }
 
 fn artwork_url_allowed(url: &str) -> bool {
-    let Some(rest) = url.strip_prefix("http://") else {
+    let Some(rest) = url.strip_prefix("https://") else {
         return false;
     };
     let host = rest.split('/').next().unwrap_or("");

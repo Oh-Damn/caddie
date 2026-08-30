@@ -292,6 +292,8 @@ export type SessionInfo = {
   wsUrl: string;
   pairingSecret: string;
   fingerprint: string;
+  certFingerprint: string;
+  version: string;
   port: number;
   clientCount: number;
   live: boolean;

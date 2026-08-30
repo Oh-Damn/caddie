@@ -1,8 +1,9 @@
 type Props = {
   variant?: 'startup' | 'footer';
+  version?: string;
 };
 
-export function PoweredBy({ variant = 'footer' }: Props) {
+export function PoweredBy({ variant = 'footer', version }: Props) {
   const startup = variant === 'startup';
   return (
     <div
@@ -19,7 +20,9 @@ export function PoweredBy({ variant = 'footer' }: Props) {
         height={500}
         className={startup ? 'w-40 max-w-[60%]' : 'w-14'}
       />
-      <p className="type-micro text-app-muted">POWERED BY OHDAMN!</p>
+      <p className="type-micro text-app-muted">
+        POWERED BY OHDAMN!{version ? ` \u00b7 v${version}` : ''}
+      </p>
     </div>
   );
 }

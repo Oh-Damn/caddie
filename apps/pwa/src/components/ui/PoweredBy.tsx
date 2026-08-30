@@ -19,7 +19,9 @@ export function PoweredBy({ variant = 'page' }: Props) {
         height={500}
         className={splash ? 'w-52 max-w-[62vw]' : 'w-20'}
       />
-      <p className="type-micro text-app-muted">POWERED BY OHDAMN!</p>
+      <p className="type-micro text-app-muted">
+        POWERED BY OHDAMN! &middot; v{__APP_VERSION__}
+      </p>
     </div>
   );
 }
