@@ -23,7 +23,8 @@ After that people install with two lines:
 ```sh
 brew tap Oh-Damn/caddie
 brew trust --cask Oh-Damn/caddie/caddie
-brew install --cask --no-quarantine caddie
+brew install --cask caddie
+xattr -dr com.apple.quarantine /Applications/Caddie.app
 ```
 
 `brew tap Oh-Damn/caddie` resolves to the `homebrew-caddie` repo — the prefix is
@@ -45,13 +46,14 @@ implied and must not be typed.
 the `version` and `sha256` fields. Never hand-edit the checksum: Homebrew
 refuses the download if it does not match, and a stale one breaks every install.
 
-## Why --no-quarantine
+## Why the xattr line
 
 The build is signed locally rather than notarised by Apple, which needs a paid
-Developer ID. Homebrew quarantines downloads by default, and macOS refuses to
-open a quarantined app with no valid Developer ID — the "can't be opened" and
-"damaged" dialogs. The flag skips the quarantine flag and the app opens
-normally.
+Developer ID. Homebrew quarantines what it downloads, and macOS refuses to open
+a quarantined app with no valid Developer ID — the "can't be opened" and
+"damaged" dialogs. Homebrew used to accept `--no-quarantine`; that option is
+gone as of Homebrew 6, and `HOMEBREW_CASK_OPTS` does not substitute for it, so
+the attribute has to be removed after installing.
 
-If Caddie ever gets a Developer ID, drop the flag from the instructions and
-delete the first paragraph of the cask's `caveats`.
+If Caddie ever gets a Developer ID, drop that line from the instructions and
+delete the cask's `caveats` block.

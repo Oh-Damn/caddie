@@ -47,14 +47,16 @@ no card appears.
 ```sh
 brew tap Oh-Damn/caddie
 brew trust --cask Oh-Damn/caddie/caddie
-brew install --cask --no-quarantine caddie
+brew install --cask caddie
+xattr -dr com.apple.quarantine /Applications/Caddie.app
 ```
 
-`brew trust` is required because Homebrew refuses to load casks from
-third-party taps it has not been told to trust. `--no-quarantine` is not
-optional either. Caddie is signed locally rather than
-notarised by Apple, which needs a paid Developer ID, and macOS refuses to open
-a quarantined app that does not have one.
+Both extra lines are required. `brew trust` exists because Homebrew refuses to
+load casks from third-party taps it has not been told to trust. The `xattr` line
+is there because Caddie is signed locally rather than notarised by Apple, which
+needs a paid Developer ID, and macOS refuses to open a quarantined app that does
+not have one — Homebrew dropped its `--no-quarantine` option, so the flag has to
+be cleared by hand.
 
 If the macOS firewall is on, allow the incoming connections when it asks. If it
 never asks and your phone cannot load the page, the app was denied silently:

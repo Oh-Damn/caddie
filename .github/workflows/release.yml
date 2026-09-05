@@ -86,10 +86,11 @@ jobs:
             ```sh
             brew tap Oh-Damn/caddie
             brew trust --cask Oh-Damn/caddie/caddie
-            brew install --cask --no-quarantine caddie
+            brew install --cask caddie
+            xattr -dr com.apple.quarantine /Applications/Caddie.app
             ```
 
-            `--no-quarantine` is required: this build is signed locally rather
+            The `xattr` line is required: this build is signed locally rather
             than notarised by Apple, and macOS refuses to open a quarantined
             app without a Developer ID.
 

@@ -30,11 +30,11 @@ cask "caddie" do
   ]
 
   caveats <<~EOS
-    Caddie is not notarised by Apple, so install it with --no-quarantine:
+    Caddie is not notarised by Apple, so macOS quarantines it and refuses
+    to open it. Homebrew no longer has a --no-quarantine option, so clear
+    the flag by hand:
 
-      brew install --cask --no-quarantine caddie
-
-    Without that flag macOS refuses to open it.
+      xattr -dr com.apple.quarantine /Applications/Caddie.app
 
     Caddie serves a web app to your phone over your local network. If the
     macOS firewall is on, allow the incoming connections when prompted. If
