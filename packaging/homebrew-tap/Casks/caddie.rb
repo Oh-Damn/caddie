@@ -1,6 +1,6 @@
 cask "caddie" do
   version "0.1.0"
-  sha256 "REPLACE_WITH_RELEASE_SHA256"
+  sha256 "8182b3861f86f3f0e50d68e6f7ade9715b917022d52351cd299572e9a56a73b7"
 
   url "https://github.com/Oh-Damn/caddie/releases/download/v#{version}/Caddie_#{version}_universal.dmg",
       verified: "github.com/Oh-Damn/caddie/"
@@ -13,7 +13,7 @@ cask "caddie" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :monterey"
+  depends_on macos: :monterey
 
   app "Caddie.app"
 
