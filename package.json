@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "pnpm --filter @companion/desktop tauri dev",
     "build:app": "sh scripts/build-app.sh",
+    "build:arm": "sh scripts/build-arm.sh",
     "sign": "sh scripts/sign-app.sh",
     "build:pwa": "pnpm --filter @companion/pwa build",
     "lint": "eslint . && prettier --check .",

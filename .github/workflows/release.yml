@@ -1,0 +1,110 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build and release, e.g. v0.1.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri
+
+      - run: pnpm install --frozen-lockfile
+
+      # No Developer ID, so this is an ad-hoc signature. It still binds the
+      # Info.plist and seals resources, which a bare linker signature does not.
+      - name: Build universal bundle
+        env:
+          APPLE_SIGNING_IDENTITY: "-"
+        run: pnpm --filter @companion/desktop tauri build --target universal-apple-darwin
+
+      - name: Verify the bundle
+        run: |
+          app=apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle/macos/Caddie.app
+          codesign --verify --strict --deep "$app"
+          lipo -archs "$app/Contents/MacOS/companion-desktop"
+
+      - name: Checksum
+        id: sum
+        run: |
+          dmg=$(ls apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg | head -1)
+          echo "dmg=$dmg" >> "$GITHUB_OUTPUT"
+          sha=$(shasum -a 256 "$dmg" | cut -d' ' -f1)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Cask checksum"
+            echo
+            echo '```'
+            echo "$sha"
+            echo '```'
+            echo
+            echo "Update the tap with:"
+            echo
+            echo '```sh'
+            echo "sh update-cask.sh ${GITHUB_REF_NAME#v} ${GITHUB_REPOSITORY}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          files: ${{ steps.sum.outputs.dmg }}
+          fail_on_unmatched_files: true
+          body: |
+            Universal macOS build (Intel and Apple Silicon), macOS 12 or later.
+
+            ## Install
+
+            ```sh
+            brew tap Oh-Damn/caddie
+            brew install --cask --no-quarantine caddie
+            ```
+
+            `--no-quarantine` is required: this build is signed locally rather
+            than notarised by Apple, and macOS refuses to open a quarantined
+            app without a Developer ID.
+
+            ## Installing the dmg directly instead
+
+            ```sh
+            xattr -dr com.apple.quarantine /Applications/Caddie.app
+            ```
+
+            If your phone cannot reach the Mac and the firewall is on:
+
+            ```sh
+            sudo /usr/libexec/ApplicationFirewall/socketfilterfw \
+              --unblockapp /Applications/Caddie.app/Contents/MacOS/companion-desktop
+            ```
+
+            Then quit Caddie from the menu bar and open it again.
+
+            `sha256` of the dmg: `${{ steps.sum.outputs.sha }}`

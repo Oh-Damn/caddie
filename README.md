@@ -42,6 +42,38 @@ are remembered.
 app, and off is a real stop: no file is opened, no Accessibility tree is walked,
 no card appears.
 
+## Install
+
+```sh
+brew tap Oh-Damn/caddie
+brew install --cask --no-quarantine caddie
+```
+
+`--no-quarantine` is not optional. Caddie is signed locally rather than
+notarised by Apple, which needs a paid Developer ID, and macOS refuses to open
+a quarantined app that does not have one.
+
+If the macOS firewall is on, allow the incoming connections when it asks. If it
+never asks and your phone cannot load the page, the app was denied silently:
+
+```sh
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw \
+  --unblockapp /Applications/Caddie.app/Contents/MacOS/companion-desktop
+```
+
+Then quit Caddie from the menu bar and open it again — a firewall decision
+binds to the running process, so the rule does not apply until it restarts.
+
+Prefer the dmg from [Releases](https://github.com/Oh-Damn/caddie/releases)? Drag
+Caddie to Applications, then clear the quarantine flag by hand:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/Caddie.app
+```
+
+Building from source avoids all of this, because quarantine comes from the
+download rather than the compiler.
+
 ## Requirements
 
 - macOS 12 or later
@@ -70,9 +102,17 @@ fallback if the `.local` name does not resolve. The server listens on port
 pnpm build:app
 ```
 
-Produces a signed universal bundle and a `.dmg`. macOS ties permission grants to
-an app's code signature, so an unsigned rebuild loses its Accessibility and
-Automation grants. For grants that survive rebuilds, make an identity once:
+Produces a signed universal bundle and a `.dmg`. On an Apple Silicon Mac that
+builds both architectures; if the bundle is only for this machine, build the
+arm64 slice on its own and skip half the compile:
+
+```bash
+pnpm build:arm
+```
+
+macOS ties permission grants to an app's code signature, so an unsigned rebuild
+loses its Accessibility and Automation grants. For grants that survive rebuilds,
+make an identity once:
 
 ```bash
 sh scripts/signing-identity.sh
