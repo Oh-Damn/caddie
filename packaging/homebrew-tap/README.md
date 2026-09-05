@@ -22,6 +22,7 @@ After that people install with two lines:
 
 ```sh
 brew tap Oh-Damn/caddie
+brew trust --cask Oh-Damn/caddie/caddie
 brew install --cask --no-quarantine caddie
 ```
 

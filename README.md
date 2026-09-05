@@ -46,10 +46,13 @@ no card appears.
 
 ```sh
 brew tap Oh-Damn/caddie
+brew trust --cask Oh-Damn/caddie/caddie
 brew install --cask --no-quarantine caddie
 ```
 
-`--no-quarantine` is not optional. Caddie is signed locally rather than
+`brew trust` is required because Homebrew refuses to load casks from
+third-party taps it has not been told to trust. `--no-quarantine` is not
+optional either. Caddie is signed locally rather than
 notarised by Apple, which needs a paid Developer ID, and macOS refuses to open
 a quarantined app that does not have one.
 
