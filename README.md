@@ -162,6 +162,22 @@ tccutil reset Accessibility dev.caddie.desktop
 tccutil reset AppleEvents dev.caddie.desktop
 ```
 
+## Updates
+
+Caddie checks GitHub on launch and offers the update on the pairing screen.
+Downloading, verifying and installing it happens in the app; it restarts itself
+when you say so.
+
+Update archives are signed with a key that is not the code signing certificate.
+The public half lives in `tauri.conf.json` and the app refuses any archive whose
+signature does not match, so a tampered or unsigned download is rejected rather
+than installed.
+
+After an update macOS may ask for Accessibility and Automation again. That
+happens when the code signature changes identity, so releases are signed with
+one stable certificate to avoid it — see `scripts/ci-identity.sh`. A release
+built without those secrets falls back to ad-hoc signing and will reset grants.
+
 ## Permissions
 
 | Permission | Needed for |

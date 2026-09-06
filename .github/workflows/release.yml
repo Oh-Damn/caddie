@@ -2,11 +2,11 @@ name: release
 
 on:
   push:
-    tags: ["v*"]
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag to build and release, e.g. v0.1.0"
+        description: 'Tag to build and release, e.g. v0.1.0'
         required: true
 
 permissions:
@@ -15,6 +15,8 @@ permissions:
 jobs:
   macos:
     runs-on: macos-14
+    env:
+      MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,11 +41,35 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # No Developer ID, so this is an ad-hoc signature. It still binds the
-      # Info.plist and seals resources, which a bare linker signature does not.
+      # macOS keys Accessibility, Automation and firewall decisions to the code
+      # signature. Ad-hoc signing produces a new identity every build, so each
+      # release would silently revoke what users granted the last one. A stable
+      # self-signed certificate keeps those grants across updates. It does not
+      # make macOS trust the app, which needs a Developer ID.
+      - name: Import signing identity
+        if: env.MACOS_CERTIFICATE != ''
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        run: |
+          keychain=$RUNNER_TEMP/caddie.keychain-db
+          pass=$(openssl rand -base64 24)
+          security create-keychain -p "$pass" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$pass" "$keychain"
+          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/identity.p12"
+          security import "$RUNNER_TEMP/identity.p12" -k "$keychain" \
+            -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$pass" "$keychain"
+          security list-keychain -d user -s "$keychain" login.keychain-db
+          rm -f "$RUNNER_TEMP/identity.p12"
+
       - name: Build universal bundle
         env:
-          APPLE_SIGNING_IDENTITY: "-"
+          # Falls back to ad-hoc when the secret is absent, so a fork still builds.
+          APPLE_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY || '-' }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: pnpm --filter @companion/desktop tauri build --target universal-apple-darwin
 
       - name: Verify the bundle
@@ -52,11 +78,60 @@ jobs:
           codesign --verify --strict --deep "$app"
           lipo -archs "$app/Contents/MacOS/companion-desktop"
 
+      # The updater reads this file, matches the version against the running
+      # build, and verifies the signature against the pubkey in tauri.conf.json.
+      # An unsigned or mis-signed archive is refused rather than installed.
+      - name: Build latest.json
+        id: updater
+        run: |
+          bundle=apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle
+          tarball=$(ls "$bundle"/macos/*.app.tar.gz 2>/dev/null | head -1 || true)
+          if [ -z "$tarball" ]; then
+            echo "No updater artifact. TAURI_SIGNING_PRIVATE_KEY is probably unset;"
+            echo "the release will publish without in-app updates."
+            echo "made=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          version="${GITHUB_REF_NAME#v}"
+          sig=$(cat "$tarball.sig")
+          name=$(basename "$tarball")
+          cat > latest.json <<JSON
+          {
+            "version": "$version",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {
+              "darwin-aarch64": {
+                "signature": "$sig",
+                "url": "https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/$name"
+              },
+              "darwin-x86_64": {
+                "signature": "$sig",
+                "url": "https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/$name"
+              }
+            }
+          }
+          JSON
+          python3 -c "import json;json.load(open('latest.json'))"
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+          echo "made=true" >> "$GITHUB_OUTPUT"
+
       - name: Checksum
         id: sum
         run: |
           dmg=$(ls apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg | head -1)
           echo "dmg=$dmg" >> "$GITHUB_OUTPUT"
+          # Assemble the upload list here so an absent updater artifact drops out
+          # cleanly instead of leaving an empty glob for the release step.
+          {
+            echo "files<<FILES_EOF"
+            echo "$dmg"
+            if [ "${{ steps.updater.outputs.made }}" = "true" ]; then
+              echo "latest.json"
+              echo "${{ steps.updater.outputs.tarball }}"
+              echo "${{ steps.updater.outputs.tarball }}.sig"
+            fi
+            echo "FILES_EOF"
+          } >> "$GITHUB_OUTPUT"
           sha=$(shasum -a 256 "$dmg" | cut -d' ' -f1)
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           {
@@ -76,7 +151,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          files: ${{ steps.sum.outputs.dmg }}
+          files: ${{ steps.sum.outputs.files }}
           fail_on_unmatched_files: true
           body: |
             Universal macOS build (Intel and Apple Silicon), macOS 12 or later.

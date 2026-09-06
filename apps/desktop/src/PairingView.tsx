@@ -6,6 +6,7 @@ import { Button } from './Button';
 import { DeviceCard } from './DeviceCard';
 import { PoweredBy } from './PoweredBy';
 import { ProvidersCard } from './ProvidersCard';
+import { UpdateCard } from './UpdateCard';
 
 type Props = {
   session: SessionInfo;
@@ -108,6 +109,8 @@ export function PairingView({ session, error }: Props) {
         ) : null}
 
         <ProvidersCard />
+
+        <UpdateCard />
 
         <details className="faceplate px-s2 py-s2">
           <summary className="type-micro cursor-pointer">Phone will not connect</summary>

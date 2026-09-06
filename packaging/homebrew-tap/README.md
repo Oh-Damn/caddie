@@ -57,3 +57,16 @@ the attribute has to be removed after installing.
 
 If Caddie ever gets a Developer ID, drop that line from the instructions and
 delete the cask's `caveats` block.
+
+## Releases and the updater
+
+A tagged build publishes three things: the dmg the cask points at, an
+`.app.tar.gz` plus its `.sig`, and a `latest.json`. The running app reads
+`latest.json` from the *latest* release, so it must be attached to every
+release or in-app updates stop at whichever release last had one.
+
+The cask and the updater are independent. Someone who installed via Homebrew
+gets in-app updates like anyone else, and `brew upgrade --cask caddie` still
+works once the cask is bumped. They do not conflict — both replace the same
+bundle — but the cask will report the older version until `update-cask.sh` is
+run.
