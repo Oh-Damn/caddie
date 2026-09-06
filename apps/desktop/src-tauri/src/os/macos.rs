@@ -1003,7 +1003,7 @@ end tell"#
         Ok(out) if out.trim() == "none" => Err("No media on that tab".into()),
         Ok(_) => Ok(()),
         Err(err) if err.contains("Access not allowed") || err.contains("-1723") => Err(format!(
-            "Turn on {name} > View > Developer > Allow JavaScript from Apple Events to control tab media"
+            "Turn on {name} > View > Developer > Allow JavaScript from Apple Events, then quit and reopen {name}. The setting does not take effect until it restarts."
         )),
         Err(err) => Err(err),
     }
@@ -1031,7 +1031,7 @@ end tell"#
         Ok(out) if out.trim() == "none" => Err("No media on that tab".into()),
         Ok(_) => Ok(()),
         Err(err) if err.contains("Access not allowed") || err.contains("-1723") => Err(format!(
-            "Turn on {name} > View > Developer > Allow JavaScript from Apple Events to control tab media"
+            "Turn on {name} > View > Developer > Allow JavaScript from Apple Events, then quit and reopen {name}. The setting does not take effect until it restarts."
         )),
         Err(err) => Err(err),
     }

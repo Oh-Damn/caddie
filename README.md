@@ -51,33 +51,64 @@ brew install --cask caddie
 xattr -dr com.apple.quarantine /Applications/Caddie.app
 ```
 
-Both extra lines are required. `brew trust` exists because Homebrew refuses to
-load casks from third-party taps it has not been told to trust. The `xattr` line
-is there because Caddie is signed locally rather than notarised by Apple, which
-needs a paid Developer ID, and macOS refuses to open a quarantined app that does
-not have one — Homebrew dropped its `--no-quarantine` option, so the flag has to
-be cleared by hand.
+Open Caddie from Applications. It lives in the **menu bar**, not the Dock —
+look for its icon at the top right of the screen and click it for the pairing
+QR code. On first launch it walks through the permissions it needs.
 
-If the macOS firewall is on, allow the incoming connections when it asks. If it
-never asks and your phone cannot load the page, the app was denied silently:
+Four lines rather than one, and the last two are the price of not being
+notarised by Apple:
+
+| Line | Why |
+| --- | --- |
+| `brew trust` | Homebrew refuses to load casks from third-party taps it has not been told to trust. |
+| `xattr -dr` | macOS quarantines anything downloaded and will not open an app that has no Developer ID. Homebrew removed its `--no-quarantine` option in version 6, so the flag has to be cleared by hand. |
+
+Skipping either one gives the same symptom: *"Caddie can't be opened"*, or
+*"Caddie is damaged"*.
+
+### Pairing the phone
+
+Scan the QR on the pairing screen with your phone's camera. It carries the
+address and the pairing secret, so there is nothing to type.
+
+If you type the address instead, **include `https://`**. The server speaks TLS
+only, so a plain `192.168.1.x:7842` hangs with no useful error. Your phone will
+then warn that the connection is not private — expected, the Mac signs its own
+certificate. Tap through it once.
+
+Phone and Mac must be on the same Wi-Fi. Guest networks and many mesh systems
+block devices from reaching each other, which looks identical to the app being
+broken.
+
+### If the phone cannot reach the Mac
+
+Caddie is not signed with a Developer ID, so macOS does not automatically let it
+accept incoming connections the way it does for notarised apps. If the firewall
+is on and never prompted you:
 
 ```sh
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw \
   --unblockapp /Applications/Caddie.app/Contents/MacOS/companion-desktop
 ```
 
-Then quit Caddie from the menu bar and open it again — a firewall decision
-binds to the running process, so the rule does not apply until it restarts.
+Then quit Caddie from the menu bar and open it again — a firewall decision binds
+to the running process, so the rule does nothing until it restarts.
 
-Prefer the dmg from [Releases](https://github.com/Oh-Damn/caddie/releases)? Drag
-Caddie to Applications, then clear the quarantine flag by hand:
+To check the server itself, on the Mac:
 
 ```sh
-xattr -dr com.apple.quarantine /Applications/Caddie.app
+curl -sk -o /dev/null -w "%{http_code}\n" https://$(ipconfig getifaddr en0):7842/api/health
 ```
 
-Building from source avoids all of this, because quarantine comes from the
-download rather than the compiler.
+`200` means the server is reachable on the network and the problem is between
+the phone and the Mac. Anything else is the Mac.
+
+### Installing the dmg directly
+
+Grab it from [Releases](https://github.com/Oh-Damn/caddie/releases), drag Caddie
+to Applications, then clear the quarantine flag as above. Building from source
+avoids all of it, since quarantine comes from the download rather than the
+compiler.
 
 ## Requirements
 
@@ -138,6 +169,17 @@ tccutil reset AppleEvents dev.caddie.desktop
 | Accessibility | Keyboard shortcuts, media keys, window titles |
 | Automation | Frontmost app, Music, Spotify, browser tabs |
 | Local Network | Letting the phone reach this Mac |
+
+### Browsers
+
+Play and pause on a browser tab is driven by AppleScript, and Chrome-family
+browsers refuse that by default. Turn on **View > Developer > Allow JavaScript
+from Apple Events**, then **quit and reopen the browser** — the setting does
+nothing until it restarts, which is the part people miss. Chrome, Brave and Arc
+all need it; Safari does not.
+
+Tab lists work without it. Only media control on a tab is affected, and Caddie
+says so in the error when you hit it.
 
 ## Start over
 
