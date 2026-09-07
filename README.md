@@ -44,6 +44,21 @@ no card appears.
 
 ## Install
 
+Caddie is installed with Homebrew, a tool that downloads and installs Mac apps
+from the Terminal. If you have never used the Terminal: hold Command and press
+the space bar, type `terminal`, and press Return. A window opens where you paste
+in a line and press Return to run it. Run the lines below one at a time and let
+each one finish before pasting the next.
+
+If you do not have Homebrew yet, install it first. It asks for your Mac
+password, and nothing appears on screen while you type it, which is normal:
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Then install Caddie:
+
 ```sh
 brew tap Oh-Damn/caddie
 brew trust --cask Oh-Damn/caddie/caddie
@@ -51,20 +66,22 @@ brew install --cask caddie
 xattr -dr com.apple.quarantine /Applications/Caddie.app
 ```
 
-Open Caddie from Applications. It lives in the **menu bar**, not the Dock —
-look for its icon at the top right of the screen and click it for the pairing
-QR code. On first launch it walks through the permissions it needs.
-
-Four lines rather than one, and the last two are the price of not being
-notarised by Apple:
-
-| Line | Why |
+| Line | What it does |
 | --- | --- |
-| `brew trust` | Homebrew refuses to load casks from third-party taps it has not been told to trust. |
-| `xattr -dr` | macOS quarantines anything downloaded and will not open an app that has no Developer ID. Homebrew removed its `--no-quarantine` option in version 6, so the flag has to be cleared by hand. |
+| `brew tap` | Points Homebrew at the place Caddie is published. |
+| `brew trust` | Homebrew will not install from someone's personal tap until you tell it that this one is fine. |
+| `brew install` | Downloads Caddie and puts it in your Applications folder. |
+| `xattr -dr` | Removes the quarantine mark macOS puts on everything you download. Caddie is not notarised by Apple, so macOS refuses to open it while that mark is there. Homebrew used to clear the mark with `--no-quarantine`, but that option was removed in Homebrew 6. |
 
-Skipping either one gives the same symptom: *"Caddie can't be opened"*, or
-*"Caddie is damaged"*.
+Miss the `brew trust` line and the install stops with an error. Miss the `xattr`
+line and Caddie will not open: macOS says *"Caddie can't be opened"* or *"Caddie
+is damaged"*. Neither one means the download is broken. Run the line you skipped
+and try again.
+
+Now open Caddie from your Applications folder. It runs in the **menu bar**
+rather than the Dock, so look for its icon along the top right of the screen and
+click it for the pairing QR code. The first launch walks you through the
+permissions it needs.
 
 ### Pairing the phone
 
@@ -73,8 +90,8 @@ address and the pairing secret, so there is nothing to type.
 
 If you type the address instead, **include `https://`**. The server speaks TLS
 only, so a plain `192.168.1.x:7842` hangs with no useful error. Your phone will
-then warn that the connection is not private — expected, the Mac signs its own
-certificate. Tap through it once.
+then warn that the connection is not private. That is expected, because the Mac
+signs its own certificate. Tap through it once.
 
 Phone and Mac must be on the same Wi-Fi. Guest networks and many mesh systems
 block devices from reaching each other, which looks identical to the app being
@@ -91,8 +108,8 @@ sudo /usr/libexec/ApplicationFirewall/socketfilterfw \
   --unblockapp /Applications/Caddie.app/Contents/MacOS/companion-desktop
 ```
 
-Then quit Caddie from the menu bar and open it again — a firewall decision binds
-to the running process, so the rule does nothing until it restarts.
+Then quit Caddie from the menu bar and open it again. A firewall decision binds
+to the running process, so the rule does nothing until Caddie restarts.
 
 To check the server itself, on the Mac:
 
@@ -175,7 +192,7 @@ than installed.
 
 After an update macOS may ask for Accessibility and Automation again. That
 happens when the code signature changes identity, so releases are signed with
-one stable certificate to avoid it — see `scripts/ci-identity.sh`. A release
+one stable certificate to avoid it. See `scripts/ci-identity.sh`. A release
 built without those secrets falls back to ad-hoc signing and will reset grants.
 
 ## Permissions
@@ -190,8 +207,8 @@ built without those secrets falls back to ad-hoc signing and will reset grants.
 
 Play and pause on a browser tab is driven by AppleScript, and Chrome-family
 browsers refuse that by default. Turn on **View > Developer > Allow JavaScript
-from Apple Events**, then **quit and reopen the browser** — the setting does
-nothing until it restarts, which is the part people miss. Chrome, Brave and Arc
+from Apple Events**, then **quit and reopen the browser**. The setting
+does nothing until it restarts, which is the part people miss. Chrome, Brave and Arc
 all need it; Safari does not.
 
 Tab lists work without it. Only media control on a tab is affected, and Caddie
